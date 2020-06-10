@@ -12,7 +12,7 @@ Most C compilers work, including GCC, PGI and Intel compilers.
 At this time Visual Studio is not supported since MSVC doesn't export function symbols without additional headers,
 which is typically done with something like SWIG.
 
-![image](tests/incldecl.png)
+![image](./wmm2020/tests/incldecl.png)
 
 ## Install
 
