@@ -1,0 +1,7 @@
+The World Magnetic Model - License and copyright information
+
+The WMM source code is in the public domain and not licensed or under copyright.
+The information and software may be used freely by the public.
+ As required by 17 U.S.C. 403, third parties producing copyrighted works consisting predominantly of the material produced by U.S. government agencies must provide notice with such work(s) identifying the U.S. Government material incorporated and stating that such material is not subject to copyright protection.
+
+ https://www.ngdc.noaa.gov/geomag/WMM/license.shtml
