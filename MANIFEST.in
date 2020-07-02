@@ -1,3 +1,3 @@
-include wmm2020/meson.build wmm2020/CMakeLists.txt wmm2020/WMM.COF
-recursive-include wmm2020/src *.c
-recursive-include wmm2020/src *.h
+include src/wmm2020/meson.build src/wmm2020/CMakeLists.txt src/wmm2020/WMM.COF
+recursive-include src/wmm2020/src *.c
+recursive-include src/wmm2020/src *.h
