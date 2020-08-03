@@ -29,9 +29,22 @@ else:
 
 
 def wmm(glats: np.ndarray, glons: np.ndarray, alt_km: float, yeardec: float) -> xarray.Dataset:
+    """
+    wmm computes the value of the world magnetic model at grid points specified by glats and
+    glons, for a single altitude value. glats and glons should be in degrees.
 
-    glats = np.atleast_2d(glats).astype(float)  # to coerce all else to float64
-    glons = np.atleast_2d(glons)
+    glats and glons should be generated from something like np.meshgrid, so they should be
+    2-D arrays. See the example in RunWMM2020.py.
+    """
+
+    glats = np.atleast_2d(glats).astype(np.float64)  # to coerce all else to float64
+    glons = np.atleast_2d(glons).astype(np.float64)
+
+    # the only way to check, if two 1-D arrays are passed in is to examine the values.
+    # expect that lon[:,i] for all i are the same value
+    # expect that lat[i,:] for all i are the same value
+    assert np.allclose(np.diff(glons, axis=0), 0)
+    assert np.allclose(np.diff(glats, axis=1), 0)
 
     assert glats.shape == glons.shape
 
