@@ -1,7 +1,6 @@
 # WMM2020
 
 ![Actions Status](https://github.com/space-physics/wmm2020/workflows/ci/badge.svg)
-![CodeQL](https://github.com/space-physics/wmm2020/workflows/CodeQL/badge.svg)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/space-physics/wmm2020.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/space-physics/wmm2020/context:python)
 [![Python versions (PyPI)](https://img.shields.io/pypi/pyversions/wmm2020.svg)](https://pypi.python.org/pypi/wmm2020)
 [![Downloads](http://pepy.tech/badge/wmm2020)](http://pepy.tech/project/wmm2020)
