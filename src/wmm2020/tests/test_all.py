@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-import pytest
 from pytest import approx
 
 import wmm2020 as wmm
 
 
-def test_wmm():
+def test_wmm2020():
     mag = wmm.wmm(65, 85, alt_km=0, yeardec=2012.52868852459)
 
     assert mag.north.item() == approx(9216.095937998032)
@@ -15,7 +13,3 @@ def test_wmm():
 
     assert mag.incl.item() == approx(80.87285397874935)
     assert mag.decl.item() == approx(15.67178464900435)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])

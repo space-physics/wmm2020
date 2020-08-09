@@ -28,7 +28,7 @@ def wmm(glats: np.ndarray, glons: np.ndarray, alt_km: float, yeardec: float) -> 
     glons, for a single altitude value. glats and glons should be in degrees.
 
     glats and glons should be generated from something like np.meshgrid, so they should be
-    2-D arrays. See the example in RunWMM2020.py.
+    2-D arrays.
     """
 
     glats = np.atleast_2d(glats).astype(np.float64)  # to coerce all else to float64

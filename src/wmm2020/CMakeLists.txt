@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Debug or Release" FORCE)
 endif()
-project(wmm LANGUAGES C)
+project(wmm20 LANGUAGES C)
 enable_testing()
 
 add_library(geo src/GeomagnetismLibrary.c)
