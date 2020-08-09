@@ -13,8 +13,12 @@ if((NOT MSVC) AND
   target_link_libraries(geo m)
 endif()
 
-add_library(wmm15 SHARED src/wmm_point_sub.c)
-target_link_libraries(wmm15 PRIVATE geo)
+add_library(wmm20 SHARED src/wmm_point_sub.c)
+target_link_libraries(wmm20 PRIVATE geo)
 
-add_executable(wmm src/wmm_point.c)
-target_link_libraries(wmm geo)
+# https://www.ngdc.noaa.gov/geomag/WMM/data/WMM2020/WMM2020testvalues.pdf
+add_executable(wmm20_file src/wmm_file.c)
+target_link_libraries(wmm20_file geo)
+add_test(NAME WMM20file
+COMMAND $<TARGET_FILE:wmm20_file> f ${CMAKE_CURRENT_SOURCE_DIR}/test_input.asc  ${CMAKE_CURRENT_BINARY_DIR}/test_output.asc
+WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})

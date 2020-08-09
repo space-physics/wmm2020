@@ -2,7 +2,6 @@ import numpy as np
 from pathlib import Path
 import xarray
 import ctypes as ct
-import shutil
 import os
 
 from .build import build, get_libpath
@@ -15,13 +14,8 @@ dllfn = get_libpath(BDIR, "wmm15")
 if dllfn is not None:
     libwmm = ct.cdll.LoadLibrary(str(dllfn))
 else:
-    if shutil.which("meson"):
-        build("meson", SDIR, BDIR)
-    elif shutil.which("cmake"):
-        build("cmake", SDIR, BDIR)
-    else:
-        raise RuntimeError("Need Meson or CMake to build WMM")
-    dllfn = get_libpath(BDIR, "wmm15")
+    build()
+    dllfn = get_libpath(BDIR, "wmm20")
     if dllfn:
         libwmm = ct.cdll.LoadLibrary(str(dllfn))
     else:
