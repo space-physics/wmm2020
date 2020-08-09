@@ -46,7 +46,7 @@ def cmake_setup(src_dir: Path, bin_dir: Path):
         cfgfn.unlink()
 
     wopts = []
-    if os.name == "nt" and not os.getenv('CMAKE_GENERATOR'):
+    if os.name == "nt" and not os.getenv("CMAKE_GENERATOR"):
         wopts = ["-G", "MinGW Makefiles", '-DCMAKE_SH="CMAKE_SH-NOTFOUND']
 
     subprocess.run([cmake_exe, "-S", str(src_dir), "-B", str(bin_dir)] + wopts)
