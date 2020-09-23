@@ -10,16 +10,14 @@ SDIR = Path(__file__).parent
 BDIR = SDIR / "build"
 
 # NOTE: must be str() for Windows, even with py37
-dllfn = get_libpath(BDIR, "wmm15")
-if dllfn is not None:
-    libwmm = ct.cdll.LoadLibrary(str(dllfn))
-else:
+dllfn = get_libpath(BDIR, "wmm20")
+if dllfn is None:
     build()
     dllfn = get_libpath(BDIR, "wmm20")
-    if dllfn:
-        libwmm = ct.cdll.LoadLibrary(str(dllfn))
-    else:
+    if dllfn is None:
         raise ModuleNotFoundError(f"could not find {dllfn}")
+
+libwmm = ct.cdll.LoadLibrary(str(dllfn))
 
 
 def wmm(glats: np.ndarray, glons: np.ndarray, alt_km: float, yeardec: float) -> xarray.Dataset:
