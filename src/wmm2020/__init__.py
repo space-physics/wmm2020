@@ -1,1 +1,1 @@
-from .base import wmm
+from .base import wmm, wmm_unique
