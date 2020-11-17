@@ -181,3 +181,56 @@ def transect(glats: np.ndarray, glons: np.ndarray, alt_km: np.ndarray, yeardec: 
     rd = {"north": north, "east": east, "down": down, "total": total, "decl": decl, "incl": incl}
 
     return rd
+
+
+def wmm_unique(glat: float, glon: float, alt_km: float, yeardec: float) -> dict:
+    """
+    wmm_unique computes the value of the world magnetic model at a specific unique points specified by glat,
+    glon, and a altitude value. glat and glon should be in degrees.
+
+    It is meant to be faster than `wmm` and `transect` to retrieve one single value.
+    """
+
+    assert isinstance(glat, float)
+    assert isinstance(glon, float)
+    assert isinstance(alt_km, float)
+
+    mag = {"glat": glat, "glon": glon}
+
+    x = ct.c_double()
+    y = ct.c_double()
+    z = ct.c_double()
+    T = ct.c_double()
+    D = ct.c_double()
+    mI = ct.c_double()
+
+    # this hack is needed because of coding practice of WMM
+
+    old_dir = os.getcwd()
+    os.chdir(SDIR)
+    ret = libwmm.wmmsub(
+        ct.c_double(glat),
+        ct.c_double(glon),
+        ct.c_double(alt_km),
+        ct.c_double(yeardec),
+        ct.byref(x),
+        ct.byref(y),
+        ct.byref(z),
+        ct.byref(T),
+        ct.byref(D),
+        ct.byref(mI),
+    )
+    os.chdir(old_dir)
+
+    assert ret == 0
+
+    mag["north"] = x.value
+    mag["east"] = y.value
+    mag["down"] = z.value
+    mag["total"] = T.value
+    mag["incl"] =  mI.value
+    mag["decl"] = D.value
+
+    mag["time"] = yeardec
+
+    return mag
