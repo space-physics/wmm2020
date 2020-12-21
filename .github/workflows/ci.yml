@@ -28,6 +28,7 @@ jobs:
         CC: gcc-9
 
   macos:
+    needs: linux
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
@@ -40,6 +41,7 @@ jobs:
     - run: pytest
 
   windows:
+    needs: linux
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
