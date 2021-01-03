@@ -24,8 +24,6 @@ jobs:
     - run: mypy .
 
     - run: pytest
-      env:
-        CC: gcc-9
 
   macos:
     needs: linux
@@ -52,5 +50,3 @@ jobs:
     - run: pip install .[tests]
 
     - run: pytest
-      env:
-        CC: gcc
