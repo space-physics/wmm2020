@@ -10,10 +10,6 @@ import importlib.resources
 import subprocess
 import sys
 
-R = Path(__file__).resolve().parent
-SRCDIR = R
-BINDIR = SRCDIR / "build"
-
 
 def build():
     """
@@ -34,8 +30,5 @@ def get_libpath(bin_dir: Path, stem: str) -> Path:
         dllfn = bin_dir / ("lib" + stem + ".so")
     elif sys.platform == "darwin":
         dllfn = bin_dir / ("lib" + stem + ".dylib")
-
-    if not dllfn.is_file():
-        dllfn = None
 
     return dllfn

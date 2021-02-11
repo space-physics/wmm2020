@@ -6,9 +6,11 @@
 set(_opts)
 
 # --- boilerplate follows
+set(CTEST_TEST_TIMEOUT 10)
+
 message(STATUS "CMake ${CMAKE_VERSION}")
-if(CMAKE_VERSION VERSION_LESS 3.15)
-  message(FATAL_ERROR "Please update CMake >= 3.15.
+if(CMAKE_VERSION VERSION_LESS 3.10)
+  message(FATAL_ERROR "Please update CMake >= 3.10.
     Try 'pip install -U cmake' or https://cmake.org/download/")
 endif()
 

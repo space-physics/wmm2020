@@ -11,10 +11,10 @@ BDIR = SDIR / "build"
 
 # NOTE: must be str() for Windows, even with py37
 dllfn = get_libpath(BDIR, "wmm20")
-if dllfn is None:
+if not dllfn.is_file():
     build()
     dllfn = get_libpath(BDIR, "wmm20")
-    if dllfn is None:
+    if not dllfn.is_file():
         raise ModuleNotFoundError(f"could not find {dllfn}")
 
 libwmm = ct.cdll.LoadLibrary(str(dllfn))
@@ -163,21 +163,20 @@ def transect(glats: np.ndarray, glons: np.ndarray, alt_km: np.ndarray, yeardec: 
 
         assert ret == 0
 
-        if len(sz) == 0:
-            north = x.value
-            east = y.value
-            down = z.value
-            total = T.value
-            decl = D.value
-            incl = mI.value
-        else:
-            north[i] = x.value
-            east[i] = y.value
-            down[i] = z.value
-            total[i] = T.value
-            decl[i] = D.value
-            incl[i] = mI.value
+        north[i] = x.value
+        east[i] = y.value
+        down[i] = z.value
+        total[i] = T.value
+        decl[i] = D.value
+        incl[i] = mI.value
 
-    rd = {"north": north, "east": east, "down": down, "total": total, "decl": decl, "incl": incl}
+    rd = {
+        "north": north[()],
+        "east": east[()],
+        "down": down[()],
+        "total": total[()],
+        "decl": decl[()],
+        "incl": incl[()],
+    }
 
     return rd

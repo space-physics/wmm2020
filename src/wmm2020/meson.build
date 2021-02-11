@@ -1,4 +1,4 @@
-project('wmm', 'c',
+project('wmm20', 'c',
   default_options : ['default_library=static', 'buildtype=release', 'warning_level=0'])
 
 os = host_machine.system()
