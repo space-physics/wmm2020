@@ -8,12 +8,6 @@ set(_opts)
 # --- boilerplate follows
 set(CTEST_TEST_TIMEOUT 10)
 
-message(STATUS "CMake ${CMAKE_VERSION}")
-if(CMAKE_VERSION VERSION_LESS 3.10)
-  message(FATAL_ERROR "Please update CMake >= 3.10.
-    Try 'pip install -U cmake' or https://cmake.org/download/")
-endif()
-
 # CTEST_CMAKE_GENERATOR must always be defined
 if(NOT DEFINED CTEST_CMAKE_GENERATOR AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.17)
   find_program(_gen NAMES ninja ninja-build samu)
@@ -64,10 +58,10 @@ ctest_configure(
   SOURCE ${CTEST_SOURCE_DIRECTORY}
   OPTIONS "${_opts}"
   RETURN_VALUE return_code
-  CAPTURE_CMAKE_ERROR cmake_err)
+  CAPTURE_CMAKE_ERROR _err)
 
 # if it's a generator or compiler mismatch, delete cache and try again
-if(NOT cmake_err EQUAL 0)
+if(NOT _err EQUAL 0)
   file(REMOVE ${CTEST_BINARY_DIRECTORY}/CMakeCache.txt)
 
   ctest_configure(
@@ -75,34 +69,29 @@ if(NOT cmake_err EQUAL 0)
     SOURCE ${CTEST_SOURCE_DIRECTORY}
     OPTIONS "${_opts}"
     RETURN_VALUE return_code
-    CAPTURE_CMAKE_ERROR cmake_err)
+    CAPTURE_CMAKE_ERROR _err)
+endif()
+if(NOT (return_code EQUAL 0 AND _err EQUAL 0))
+  message(FATAL_ERROR "ctest_configure(): returncode: ${return_code}; CMake error code: ${_err}")
 endif()
 
-if(return_code EQUAL 0 AND cmake_err EQUAL 0)
-  ctest_build(
-    BUILD ${CTEST_BINARY_DIRECTORY}
-    CONFIGURATION ${CTEST_BUILD_CONFIGURATION}
-    RETURN_VALUE return_code
-    NUMBER_ERRORS Nerror
-    CAPTURE_CMAKE_ERROR cmake_err
-    )
-else()
-  message(STATUS "SKIP: ctest_build(): returncode: ${return_code}; CMake error code: ${cmake_err}")
+ctest_build(
+  BUILD ${CTEST_BINARY_DIRECTORY}
+  CONFIGURATION ${CTEST_BUILD_CONFIGURATION}
+  RETURN_VALUE return_code
+  CAPTURE_CMAKE_ERROR _err
+  )
+if(NOT (return_code EQUAL 0 AND _err EQUAL 0))
+  message(FATAL_ERROR "ctest_build(): returncode: ${return_code}; CMake error code: ${_err}")
 endif()
 
-if(return_code EQUAL 0 AND Nerror EQUAL 0 AND cmake_err EQUAL 0)
-  ctest_test(
+ctest_test(
   BUILD ${CTEST_BINARY_DIRECTORY}
   RETURN_VALUE return_code
-  CAPTURE_CMAKE_ERROR ctest_err
+  CAPTURE_CMAKE_ERROR _err
   PARALLEL_LEVEL ${Ncpu}
   )
-else()
-  message(STATUS "SKIP: ctest_test(): returncode: ${return_code}; CMake error code: ${cmake_err}")
-endif()
 
-# ctest_submit()
-
-if(NOT (return_code EQUAL 0 AND Nerror EQUAL 0 AND cmake_err EQUAL 0 AND ctest_err EQUAL 0))
-  message(FATAL_ERROR "Build and test failed.")
+if(NOT (return_code EQUAL 0 AND _err EQUAL 0))
+  message(FATAL_ERROR "ctest_test(): returncode: ${return_code}; CMake error code: ${_err}")
 endif()
