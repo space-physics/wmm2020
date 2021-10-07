@@ -1,24 +1,36 @@
 from __future__ import annotations
 import numpy as np
-from pathlib import Path
 import xarray
-import ctypes as ct
-import os
 
-from .build import build, get_libpath
+from .this_path import SDIR
 
-SDIR = Path(__file__).parent
-BDIR = SDIR / "build"
+# Import the C Extension or Build DLL the old way
+try:
+    from .wmm_cext import wmmsub
+    USING_C_EXT = True
+except (ImportError, Exception):
+    USING_C_EXT = False
+    from .build import wmmsub
 
-# NOTE: must be str() for Windows, even with py37
-dllfn = get_libpath(BDIR, "wmm20")
-if not dllfn.is_file():
-    build()
-    dllfn = get_libpath(BDIR, "wmm20")
-    if not dllfn.is_file():
-        raise ModuleNotFoundError(f"could not find {dllfn}")
 
-libwmm = ct.cdll.LoadLibrary(str(dllfn))
+__all__ = ['get_wmm_filename', 'set_wmm_filename',
+           'wmm', 'transect', 'wmm_point',
+           'USING_C_EXT', 'wmmsub']
+
+
+WMM_FILE = SDIR.joinpath('WMM.COF')
+
+
+def get_wmm_filename() -> str:
+    """Return the WMM.COF filename path."""
+    global WMM_FILE
+    return str(WMM_FILE)
+
+
+def set_wmm_filename(filename: str):
+    """Set the WMM.COF filename path."""
+    global WMM_FILE
+    WMM_FILE = filename
 
 
 def wmm(glats: np.ndarray, glons: np.ndarray, alt_km: float, yeardec: float) -> xarray.Dataset:
@@ -50,40 +62,14 @@ def wmm(glats: np.ndarray, glons: np.ndarray, alt_km: float, yeardec: float) -> 
     incl = np.empty(glats.size)
 
     for i, (glat, glon) in enumerate(zip(glats.ravel(), glons.ravel())):
+        x, y, z, T, D, mI = wmmsub(glat, glon, alt_km, yeardec, get_wmm_filename())
 
-        x = ct.c_double()
-        y = ct.c_double()
-        z = ct.c_double()
-        T = ct.c_double()
-        D = ct.c_double()
-        mI = ct.c_double()
-
-        # this hack is needed because of coding practice of WMM
-
-        old_dir = os.getcwd()
-        os.chdir(SDIR)
-        ret = libwmm.wmmsub(
-            ct.c_double(glat),
-            ct.c_double(glon),
-            ct.c_double(alt_km),
-            ct.c_double(yeardec),
-            ct.byref(x),
-            ct.byref(y),
-            ct.byref(z),
-            ct.byref(T),
-            ct.byref(D),
-            ct.byref(mI),
-        )
-        os.chdir(old_dir)
-
-        assert ret == 0
-
-        north[i] = x.value
-        east[i] = y.value
-        down[i] = z.value
-        total[i] = T.value
-        decl[i] = D.value
-        incl[i] = mI.value
+        north[i] = x
+        east[i] = y
+        down[i] = z
+        total[i] = T
+        decl[i] = D
+        incl[i] = mI
 
     mag["north"] = (("glat", "glon"), north.reshape(glats.shape))
     mag["east"] = (("glat", "glon"), east.reshape(glats.shape))
@@ -136,40 +122,14 @@ def transect(glats: np.ndarray, glons: np.ndarray, alt_km: np.ndarray, yeardec: 
     incl = np.empty(sz)
 
     for i, (_lat, _lon, _alt, _year) in enumerate(zip(*[v.ravel() for v in ref_input.values()])):
+        x, y, z, T, D, mI = wmmsub(_lat, _lon, _alt, _year, get_wmm_filename())
 
-        x = ct.c_double()
-        y = ct.c_double()
-        z = ct.c_double()
-        T = ct.c_double()
-        D = ct.c_double()
-        mI = ct.c_double()
-
-        # this hack is needed because of coding practice of WMM
-
-        old_dir = os.getcwd()
-        os.chdir(SDIR)
-        ret = libwmm.wmmsub(
-            ct.c_double(_lat),
-            ct.c_double(_lon),
-            ct.c_double(_alt),
-            ct.c_double(_year),
-            ct.byref(x),
-            ct.byref(y),
-            ct.byref(z),
-            ct.byref(T),
-            ct.byref(D),
-            ct.byref(mI),
-        )
-        os.chdir(old_dir)
-
-        assert ret == 0
-
-        north[i] = x.value
-        east[i] = y.value
-        down[i] = z.value
-        total[i] = T.value
-        decl[i] = D.value
-        incl[i] = mI.value
+        north[i] = x
+        east[i] = y
+        down[i] = z
+        total[i] = T
+        decl[i] = D
+        incl[i] = mI
 
     rd = {
         "north": north[()],
@@ -203,39 +163,14 @@ def wmm_point(glat: float, glon: float, alt_km: float, yeardec: float) -> dict[s
 
     mag = {"glat": glat, "glon": glon}
 
-    x = ct.c_double()
-    y = ct.c_double()
-    z = ct.c_double()
-    T = ct.c_double()
-    D = ct.c_double()
-    mI = ct.c_double()
+    x, y, z, T, D, mI = wmmsub(glat, glon, alt_km, yeardec, get_wmm_filename())
 
-    # this hack is needed because of coding practice of WMM
-
-    old_dir = os.getcwd()
-    os.chdir(SDIR)
-    ret = libwmm.wmmsub(
-        ct.c_double(glat),
-        ct.c_double(glon),
-        ct.c_double(alt_km),
-        ct.c_double(yeardec),
-        ct.byref(x),
-        ct.byref(y),
-        ct.byref(z),
-        ct.byref(T),
-        ct.byref(D),
-        ct.byref(mI),
-    )
-    os.chdir(old_dir)
-
-    assert ret == 0
-
-    mag["north"] = x.value
-    mag["east"] = y.value
-    mag["down"] = z.value
-    mag["total"] = T.value
-    mag["incl"] = mI.value
-    mag["decl"] = D.value
+    mag["north"] = x
+    mag["east"] = y
+    mag["down"] = z
+    mag["total"] = T
+    mag["incl"] = mI
+    mag["decl"] = D
 
     mag["time"] = yeardec
 
