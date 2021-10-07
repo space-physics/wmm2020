@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 import site
 import setuptools
 
@@ -15,4 +16,9 @@ extensions = [
                 include_dirs=['src/wmm2020/src/']),
     ]
 
-setuptools.setup(ext_modules=extensions)
+try:
+    setuptools.setup(ext_modules=extensions)
+except (Exception, SystemError, SystemExit) as err:
+    # Catch SystemExit to try installing again without C Extension
+    print('Failed to build the C Extension!', file=sys.stderr)  # This will only print with "pip install -v ."
+    setuptools.setup()
