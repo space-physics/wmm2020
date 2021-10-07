@@ -28,8 +28,8 @@ April 21, 2011
  *  Last changed on: $Date: 2014-11-21 10:40:43 -0700 (Fri, 21 Nov 2014) $
  */
 
-int wmmsub(double geolatitude, double geolongitude, double HeightAboveEllipsoid, double yeardecimal,
-           double* X, double* Y, double* Z, double* F, double* Decl, double* Incl)
+int wmmsub_f(double geolatitude, double geolongitude, double HeightAboveEllipsoid, double yeardecimal,
+             double* X, double* Y, double* Z, double* F, double* Decl, double* Incl, char* filename)
 {
     MAGtype_MagneticModel * MagneticModels[1], *TimedMagneticModel;
     MAGtype_Ellipsoid Ellip;
@@ -39,7 +39,6 @@ int wmmsub(double geolatitude, double geolongitude, double HeightAboveEllipsoid,
     MAGtype_GeoMagneticElements GeoMagneticElements,Errors;
     MAGtype_Geoid Geoid;
     char ans[20], b;
-    char filename[] = "WMM.COF";
     char VersionDate_Large[] = "$Date: 2014-11-21 10:40:43 -0700 (Fri, 21 Nov 2014) $";
     char VersionDate[12];
     int NumTerms, Flag = 1, nMax = 0;
@@ -98,4 +97,12 @@ int wmmsub(double geolatitude, double geolongitude, double HeightAboveEllipsoid,
     *Incl = GeoMagneticElements.Incl;
 
     return EXIT_SUCCESS;
+}
+
+
+int wmmsub(double geolatitude, double geolongitude, double HeightAboveEllipsoid, double yeardecimal,
+           double* X, double* Y, double* Z, double* F, double* Decl, double* Incl)
+{
+    return wmmsub(geolatitude, geolongitude, HeightAboveEllipsoid, yeardecimal,
+                  X, Y, Z, F, Decl, Incl, "WMM.COF");
 }
